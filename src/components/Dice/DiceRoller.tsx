@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAssetPath, assetUrl } from '../../utils/assetPath.js';
 
 interface DiceRollerProps {
   dice: number[];
@@ -7,41 +8,38 @@ interface DiceRollerProps {
 }
 
 function DiceFace({ value, size = 48, animating = false }: { value: number; size?: number; animating?: boolean }) {
-  const dotPositions: Record<number, Array<[number, number]>> = {
-    1: [[24, 24]],
-    2: [[14, 14], [34, 34]],
-    3: [[14, 14], [24, 24], [34, 34]],
-    4: [[14, 14], [34, 14], [14, 34], [34, 34]],
-    5: [[14, 14], [34, 14], [24, 24], [14, 34], [34, 34]],
-    6: [[14, 12], [34, 12], [14, 24], [34, 24], [14, 36], [34, 36]],
-  };
-
-  const dots = dotPositions[value] || [];
+  const basePath = useAssetPath();
 
   return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 48 48"
+    <div
       className={animating ? 'sa-dice-rolling' : ''}
-      style={{ filter: 'drop-shadow(2px 2px 3px rgba(0,0,0,0.3))' }}
+      style={{
+        width: size,
+        height: size,
+        filter: 'drop-shadow(2px 2px 3px rgba(0,0,0,0.4))',
+        transition: animating ? 'none' : 'transform 0.2s',
+      }}
     >
-      <rect x="2" y="2" width="44" height="44" rx="8" fill="#f0e6d2" stroke="#8B6914" strokeWidth="2" />
-      {dots.map(([cx, cy], i) => (
-        <circle key={i} cx={cx} cy={cy} r="4.5" fill="#1a1207" />
-      ))}
-    </svg>
+      <img
+        src={assetUrl(basePath, `dice/dice-${value}.gif`)}
+        alt={`Die: ${value}`}
+        width={size}
+        height={size}
+        style={{ objectFit: 'contain', display: 'block' }}
+        draggable={false}
+      />
+    </div>
   );
 }
 
 export function DiceRoller({ dice, rolling = false, size = 48 }: DiceRollerProps) {
+  const basePath = useAssetPath();
   const [displayDice, setDisplayDice] = useState<number[]>(dice);
   const [isAnimating, setIsAnimating] = useState(rolling);
 
   useEffect(() => {
     if (rolling) {
       setIsAnimating(true);
-      // Show random faces during animation
       const interval = setInterval(() => {
         setDisplayDice(dice.map(() => Math.floor(Math.random() * 6) + 1));
       }, 100);
@@ -63,7 +61,15 @@ export function DiceRoller({ dice, rolling = false, size = 48 }: DiceRollerProps
   }, [dice, rolling]);
 
   return (
-    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', alignItems: 'center' }}>
+      <img
+        src={assetUrl(basePath, 'dice/cup.png')}
+        alt="Dice cup"
+        width={size * 1.2}
+        height={size * 1.2}
+        style={{ objectFit: 'contain', marginRight: 4, opacity: 0.8 }}
+        draggable={false}
+      />
       {displayDice.map((value, i) => (
         <DiceFace key={i} value={value} size={size} animating={isAnimating} />
       ))}

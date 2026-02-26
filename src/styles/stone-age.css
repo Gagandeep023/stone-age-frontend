@@ -62,17 +62,19 @@
   padding: 8px 16px;
   border: 1px solid var(--sa-border);
   border-radius: var(--sa-radius);
-  background: var(--sa-bg-card);
+  background: linear-gradient(180deg, #4a3a20, #3a2c15);
   color: var(--sa-text-primary);
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
 }
 
 .sa-btn:hover {
-  background: var(--sa-bg-board);
+  background: linear-gradient(180deg, #5a4a30, #4a3c20);
   border-color: var(--sa-border-light);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
 .sa-btn:disabled {
@@ -81,13 +83,15 @@
 }
 
 .sa-btn-primary {
-  background: var(--sa-accent);
+  background: linear-gradient(180deg, #e8b830, #c49015);
   color: var(--sa-bg-primary);
-  border-color: var(--sa-accent);
+  border-color: #c49015;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.15);
 }
 
 .sa-btn-primary:hover {
-  background: var(--sa-accent-hover);
+  background: linear-gradient(180deg, #f0c840, #d4a017);
+  box-shadow: 0 2px 8px rgba(212,160,23,0.3);
 }
 
 .sa-btn-danger {
@@ -102,10 +106,51 @@
 
 /* Card styles */
 .sa-card {
-  background: var(--sa-bg-card);
+  background: linear-gradient(145deg, #3a2c15, #2a1f0e);
   border: 1px solid var(--sa-border);
   border-radius: var(--sa-radius);
   padding: 16px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 2px 6px rgba(0,0,0,0.25);
+}
+
+/* Player board - wood panel styling */
+.sa-player-board {
+  background: linear-gradient(155deg, #4a3520 0%, #3a2810 40%, #2a1d0a 100%);
+  border: 2px solid #5a4a2a;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.06),
+    inset 0 -1px 0 rgba(0,0,0,0.2),
+    0 3px 8px rgba(0,0,0,0.35);
+}
+
+/* HUD bar - wooden banner */
+.sa-hud {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 16px;
+  background: linear-gradient(180deg, #3a2c18 0%, #2a1f0e 100%);
+  border-radius: var(--sa-radius);
+  border: 1px solid var(--sa-border);
+  border-bottom: 2px solid #4a3a1a;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.3);
+  flex-wrap: wrap;
+}
+
+.sa-hud-divider {
+  width: 1px;
+  height: 20px;
+  background: var(--sa-border);
+}
+
+.sa-hud-phase-badge {
+  padding: 3px 12px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4a3c1f, #3a2c15);
+  border: 1px solid var(--sa-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sa-accent);
 }
 
 /* Dice animation */
@@ -190,13 +235,19 @@
   border-radius: 12px;
   font-size: 13px;
   font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+  transition: transform 0.15s ease;
 }
 
-.sa-resource-badge.wood { background: var(--sa-wood); color: white; }
-.sa-resource-badge.brick { background: var(--sa-brick); color: white; }
-.sa-resource-badge.stone { background: var(--sa-stone); color: white; }
-.sa-resource-badge.gold { background: var(--sa-gold); color: var(--sa-bg-primary); }
-.sa-resource-badge.food { background: var(--sa-food); color: white; }
+.sa-resource-badge:hover {
+  transform: scale(1.05);
+}
+
+.sa-resource-badge.wood { background: linear-gradient(135deg, #a07a1e, #6a4f0f); color: white; }
+.sa-resource-badge.brick { background: linear-gradient(135deg, #d46a4c, #a04830); color: white; }
+.sa-resource-badge.stone { background: linear-gradient(135deg, #7a7a7a, #505050); color: white; }
+.sa-resource-badge.gold { background: linear-gradient(135deg, #f0c040, #b08010); color: var(--sa-bg-primary); }
+.sa-resource-badge.food { background: linear-gradient(135deg, #3a6a20, #1e3a0e); color: white; }
 
 /* ==========================================
    Lobby Styles
@@ -710,4 +761,162 @@
   color: var(--sa-text-muted);
   text-align: center;
   margin: 12px 0 0;
+}
+
+/* ==========================================
+   3D Game Overlay Styles
+   ========================================== */
+
+.sa-game-wrapper {
+  min-height: 100vh;
+}
+
+.sa-game-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.sa-game-overlay > * {
+  pointer-events: none;
+}
+
+/* Score float animation */
+@keyframes sa-score-float {
+  0% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-60px); }
+}
+
+/* Achievement slide down */
+@keyframes sa-slide-down {
+  0% { opacity: 0; transform: translateX(-50%) translateY(-100%); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Confetti animation */
+@keyframes sa-confetti-fall {
+  0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.sa-confetti-piece {
+  animation: sa-confetti-fall linear infinite;
+}
+
+/* Toast notification */
+.sa-toast {
+  animation: sa-fade-in 0.3s ease;
+}
+
+/* Turn timer pulse for low time */
+@keyframes sa-timer-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+.sa-turn-timer-critical {
+  animation: sa-timer-pulse 0.5s ease-in-out infinite;
+}
+
+/* Victory overlay */
+.sa-victory {
+  animation: sa-fade-in 0.5s ease;
+}
+
+/* Chat panel transition */
+.sa-chat-panel {
+  transition: width 0.2s ease;
+}
+
+/* ==========================================
+   Enhanced Animations & Polish
+   ========================================== */
+
+/* Worker placement animation */
+@keyframes sa-worker-place {
+  0% { transform: translateY(-20px) scale(0.5); opacity: 0; }
+  60% { transform: translateY(2px) scale(1.1); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.sa-worker-placed {
+  animation: sa-worker-place 0.4s ease-out;
+}
+
+/* Resource collect animation */
+@keyframes sa-resource-collect {
+  0% { transform: scale(1); filter: brightness(1); }
+  30% { transform: scale(1.3); filter: brightness(1.5); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.sa-resource-collected {
+  animation: sa-resource-collect 0.5s ease;
+}
+
+/* Card hover zoom */
+@keyframes sa-card-hover-glow {
+  0%, 100% { box-shadow: 0 0 0 rgba(212,160,23,0); }
+  50% { box-shadow: 0 0 12px rgba(212,160,23,0.4); }
+}
+
+/* Golden shimmer for selected items */
+@keyframes sa-shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.sa-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(240,192,64,0.15) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: sa-shimmer 2s linear infinite;
+}
+
+/* Dice cup tip animation */
+@keyframes sa-dice-cup-tip {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(-30deg); }
+  60% { transform: rotate(5deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.sa-dice-cup-tipping {
+  animation: sa-dice-cup-tip 0.6s ease;
+  transform-origin: bottom center;
+}
+
+/* Location available glow */
+@keyframes sa-location-glow {
+  0%, 100% { box-shadow: 0 0 4px rgba(240,192,64,0.3); }
+  50% { box-shadow: 0 0 12px rgba(240,192,64,0.6); }
+}
+
+/* Score track marker bounce */
+@keyframes sa-marker-bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-4px); }
+}
+
+.sa-score-update {
+  animation: sa-marker-bounce 0.3s ease 2;
+}
+
+/* Resource token image hover */
+.sa-resource-badge img {
+  transition: transform 0.15s ease;
+}
+
+.sa-resource-badge:hover img {
+  transform: scale(1.15);
+}
+
+/* Tool icon hover */
+.sa-card .sa-btn:hover {
+  transform: translateY(-1px);
+}
+
+/* Smooth board transitions */
+.sa-card, .sa-btn, .sa-resource-badge {
+  transition: all 0.2s ease;
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useAssetPath, assetUrl } from '../../utils/assetPath.js';
 
 interface ToolIconProps {
   level: number;
@@ -7,27 +8,42 @@ interface ToolIconProps {
 }
 
 export function ToolIcon({ level, used = false, size = 24 }: ToolIconProps) {
-  const fill = used ? '#4a4a4a' : '#8B6914';
-  const stroke = used ? '#333' : '#6a4f0f';
+  const basePath = useAssetPath();
+  const clampedLevel = Math.min(Math.max(level, 1), 4);
 
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" style={{ opacity: used ? 0.5 : 1 }}>
-      {/* Hammer shape */}
-      <rect x="10" y="2" width="4" height="10" rx="1" fill={fill} stroke={stroke} strokeWidth="1" />
-      <rect x="5" y="2" width="14" height="5" rx="2" fill={fill} stroke={stroke} strokeWidth="1.5" />
-      {/* Handle */}
-      <rect x="11" y="11" width="2" height="10" fill="#5a3a0a" stroke="#3a2505" strokeWidth="0.5" />
-      {/* Level indicator */}
-      <text
-        x="12"
-        y="7"
-        textAnchor="middle"
-        fill="white"
-        fontSize="7"
-        fontWeight="bold"
-      >
-        {level}
-      </text>
-    </svg>
+    <div style={{
+      position: 'relative',
+      display: 'inline-block',
+      width: size,
+      height: size,
+      opacity: used ? 0.4 : 1,
+      filter: used ? 'grayscale(0.8)' : 'none',
+      transition: 'opacity 0.2s, filter 0.2s',
+    }}>
+      <img
+        src={assetUrl(basePath, `tools/tool-${clampedLevel}.jpg`)}
+        alt={`Tool level ${level}`}
+        width={size}
+        height={size}
+        style={{ objectFit: 'contain', borderRadius: 3 }}
+        draggable={false}
+      />
+      {used && (
+        <div style={{
+          position: 'absolute',
+          inset: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: size * 0.6,
+          color: '#cc4444',
+          fontWeight: 700,
+          textShadow: '0 1px 2px rgba(0,0,0,0.8)',
+        }}>
+          ✓
+        </div>
+      )}
+    </div>
   );
 }

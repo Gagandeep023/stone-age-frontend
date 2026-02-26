@@ -1,8 +1,8 @@
 import React from 'react';
-import type { PlayerState } from '../../types/index.js';
+import type { PlayerState, PlayerColor } from '../../types/index.js';
 import { ResourceBadge } from '../Common/ResourceIcon.js';
 import { ToolIcon } from '../Common/ToolIcon.js';
-import { WorkerMeeple } from '../Common/WorkerMeeple.js';
+import { useAssetPath, assetUrl } from '../../utils/assetPath.js';
 
 interface PlayerBoardProps {
   player: PlayerState;
@@ -11,30 +11,55 @@ interface PlayerBoardProps {
   compact?: boolean;
 }
 
+function getPlayerIndex(color: PlayerColor): number {
+  const map: Record<PlayerColor, number> = { red: 0, blue: 1, yellow: 2, green: 3 };
+  return map[color];
+}
+
 export function PlayerBoard({ player, isCurrentPlayer, isMyPlayer, compact }: PlayerBoardProps) {
+  const basePath = useAssetPath();
+  const pIdx = getPlayerIndex(player.color);
   const borderColor = isCurrentPlayer ? 'var(--sa-accent)' : 'var(--sa-border)';
-  const bgColor = isMyPlayer ? 'var(--sa-bg-secondary)' : 'var(--sa-bg-card)';
 
   return (
     <div
-      className="sa-card"
+      className="sa-card sa-player-board"
       style={{
         borderColor,
-        background: bgColor,
         borderWidth: isCurrentPlayer ? 2 : 1,
         opacity: player.connected ? 1 : 0.6,
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
       {/* Header */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
-        <WorkerMeeple color={player.color} size={20} />
+        <img
+          src={assetUrl(basePath, `players/figure-${pIdx}.png`)}
+          alt={player.color}
+          width={24}
+          height={28}
+          style={{ objectFit: 'contain' }}
+          draggable={false}
+        />
         <span style={{ fontWeight: 600, fontSize: 14, flex: 1 }}>
           {player.name}
           {isMyPlayer && ' (You)'}
         </span>
-        <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--sa-accent)' }}>
-          {player.score} VP
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+          <img
+            src={assetUrl(basePath, `players/marker-${pIdx}.gif`)}
+            alt="score"
+            width={14}
+            height={14}
+            style={{ objectFit: 'contain' }}
+            draggable={false}
+          />
+          <span style={{ fontSize: 18, fontWeight: 700, color: 'var(--sa-accent)' }}>
+            {player.score}
+          </span>
+          <span style={{ fontSize: 11, color: 'var(--sa-text-muted)' }}>VP</span>
+        </div>
       </div>
 
       {!player.connected && (
@@ -54,24 +79,42 @@ export function PlayerBoard({ player, isCurrentPlayer, isMyPlayer, compact }: Pl
         <>
           {/* Workers */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6, fontSize: 12, color: 'var(--sa-text-secondary)' }}>
-            <WorkerMeeple color={player.color} size={14} />
+            <img
+              src={assetUrl(basePath, `players/figure-${pIdx}.png`)}
+              alt="worker"
+              width={14}
+              height={16}
+              style={{ objectFit: 'contain' }}
+              draggable={false}
+            />
             <span>{player.availableWorkers}/{player.totalWorkers} workers available</span>
           </div>
 
           {/* Food production */}
           <div style={{ fontSize: 12, color: 'var(--sa-text-secondary)', marginBottom: 6 }}>
-            Food production: {player.foodProduction}/10
+            <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 2 }}>
+              <img
+                src={assetUrl(basePath, 'ui/field-agriculture.png')}
+                alt="food track"
+                width={14}
+                height={14}
+                style={{ objectFit: 'contain' }}
+                draggable={false}
+              />
+              Food production: {player.foodProduction}/10
+            </div>
             <div style={{
-              height: 4,
+              height: 6,
               background: 'var(--sa-bg-primary)',
-              borderRadius: 2,
-              marginTop: 2,
+              borderRadius: 3,
+              border: '1px solid var(--sa-border)',
             }}>
               <div style={{
                 height: '100%',
                 width: `${(player.foodProduction / 10) * 100}%`,
-                background: 'var(--sa-food)',
-                borderRadius: 2,
+                background: 'linear-gradient(90deg, var(--sa-food), var(--sa-food-light))',
+                borderRadius: 3,
+                transition: 'width 0.3s ease',
               }} />
             </div>
           </div>
@@ -83,24 +126,47 @@ export function PlayerBoard({ player, isCurrentPlayer, isMyPlayer, compact }: Pl
               <span style={{ fontSize: 11, color: 'var(--sa-text-muted)' }}>None</span>
             )}
             {player.tools.map((tool, i) => (
-              <ToolIcon key={i} level={tool.level} used={tool.usedThisRound} size={20} />
+              <ToolIcon key={i} level={tool.level} used={tool.usedThisRound} size={24} />
             ))}
             {player.oneUseTools.map((value, i) => (
               <span key={`ou-${i}`} style={{
                 fontSize: 10,
-                padding: '1px 4px',
-                background: 'var(--sa-wood)',
-                borderRadius: 3,
+                padding: '2px 6px',
+                background: 'linear-gradient(135deg, var(--sa-wood), var(--sa-wood-light))',
+                borderRadius: 4,
                 color: 'white',
+                fontWeight: 600,
+                boxShadow: '0 1px 2px rgba(0,0,0,0.3)',
               }}>
-                +{value}*
+                +{value}
               </span>
             ))}
           </div>
 
           {/* Cards and buildings count */}
-          <div style={{ fontSize: 12, color: 'var(--sa-text-secondary)' }}>
-            Cards: {player.civilizationCards.length} | Buildings: {player.buildings.length}
+          <div style={{ display: 'flex', gap: 12, fontSize: 12, color: 'var(--sa-text-secondary)' }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              <img
+                src={assetUrl(basePath, 'cards/symbol-card.png')}
+                alt="cards"
+                width={14}
+                height={14}
+                style={{ objectFit: 'contain' }}
+                draggable={false}
+              />
+              {player.civilizationCards.length}
+            </span>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+              <img
+                src={assetUrl(basePath, 'huts/symbol-building.png')}
+                alt="buildings"
+                width={14}
+                height={14}
+                style={{ objectFit: 'contain' }}
+                draggable={false}
+              />
+              {player.buildings.length}
+            </span>
           </div>
         </>
       )}

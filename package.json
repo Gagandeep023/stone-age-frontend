@@ -1,7 +1,7 @@
 {
   "name": "@gagandeep023/stone-age-frontend",
-  "version": "0.1.0",
-  "description": "Stone Age board game frontend - React components, SVG assets, and Socket.IO hooks",
+  "version": "0.3.0",
+  "description": "Stone Age board game frontend - 3D scene, React components, animations, and Socket.IO hooks",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
@@ -37,6 +37,8 @@
     "stone-age",
     "board-game",
     "react",
+    "three.js",
+    "3d",
     "multiplayer",
     "game-ui"
   ],
@@ -44,6 +46,12 @@
   "license": "MIT",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "three": "^0.172.0",
+    "@react-three/fiber": "^9.1.2",
+    "@react-three/drei": "^10.0.0",
+    "@react-spring/three": "^10.0.3"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0",
@@ -53,6 +61,7 @@
   "devDependencies": {
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
+    "@types/three": "^0.172.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "socket.io-client": "^4.8.0",

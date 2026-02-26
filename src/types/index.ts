@@ -141,6 +141,27 @@ export type DiceForItemsChoice =
   | { type: 'tool' }
   | { type: 'foodProduction' };
 
+export interface PendingFlexResources {
+  playerId: string;
+  amount: number;
+  chosen: Partial<Record<ResourceType, number>> | null;
+}
+
+export interface PendingResourceDice {
+  playerId: string;
+  dice: number[];
+  total: number;
+  chosenResource: ResourceType | null;
+}
+
+export interface ChatMessage {
+  playerId: string;
+  playerName: string;
+  message: string;
+  emote?: string;
+  timestamp?: number;
+}
+
 export interface GameState {
   gameId: string;
   roundNumber: number;
@@ -163,6 +184,8 @@ export interface GameState {
     dice: number[];
     playerChoices: Record<string, DiceForItemsChoice | null>;
   } | null;
+  pendingFlexResources: PendingFlexResources | null;
+  pendingResourceDice: PendingResourceDice | null;
   log: GameLogEntry[];
 }
 
@@ -193,4 +216,5 @@ export interface StoneAgeGameProps {
   user: { id: string; name: string; picture?: string };
   authToken: string;
   onLeave: () => void;
+  assetBasePath?: string;
 }

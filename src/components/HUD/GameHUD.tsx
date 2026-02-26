@@ -1,10 +1,15 @@
 import React from 'react';
-import type { GameState } from '../../types/index.js';
-import { WorkerMeeple } from '../Common/WorkerMeeple.js';
+import type { GameState, PlayerColor } from '../../types/index.js';
+import { useAssetPath, assetUrl } from '../../utils/assetPath.js';
 
 interface GameHUDProps {
   gameState: GameState;
   userId: string;
+}
+
+function getPlayerIndex(color: PlayerColor): number {
+  const map: Record<PlayerColor, number> = { red: 0, blue: 1, yellow: 2, green: 3 };
+  return map[color];
 }
 
 function formatPhase(phase: string): string {
@@ -17,20 +22,23 @@ function formatPhase(phase: string): string {
 }
 
 export function GameHUD({ gameState, userId }: GameHUDProps) {
+  const basePath = useAssetPath();
   const currentPlayer = gameState.players[gameState.currentPlayerIndex];
   const isMyTurn = currentPlayer?.id === userId;
 
   return (
-    <div style={{
-      display: 'flex',
-      alignItems: 'center',
-      gap: 12,
-      padding: '8px 16px',
-      background: 'var(--sa-bg-secondary)',
-      borderRadius: 'var(--sa-radius)',
-      border: '1px solid var(--sa-border)',
-      flexWrap: 'wrap',
-    }}>
+    <div className="sa-hud">
+      {/* Logo */}
+      <img
+        src={assetUrl(basePath, 'ui/logo.png')}
+        alt="Stone Age"
+        height={28}
+        style={{ objectFit: 'contain' }}
+        draggable={false}
+      />
+
+      <div className="sa-hud-divider" />
+
       <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         <span style={{ fontSize: 12, color: 'var(--sa-text-muted)' }}>Round</span>
         <span style={{ fontSize: 16, fontWeight: 700, color: 'var(--sa-accent)' }}>
@@ -38,25 +46,25 @@ export function GameHUD({ gameState, userId }: GameHUDProps) {
         </span>
       </div>
 
-      <div style={{ width: 1, height: 20, background: 'var(--sa-border)' }} />
+      <div className="sa-hud-divider" />
 
-      <div style={{
-        padding: '3px 10px',
-        borderRadius: 12,
-        background: 'var(--sa-bg-board)',
-        fontSize: 12,
-        fontWeight: 600,
-        color: 'var(--sa-accent)',
-      }}>
+      <div className="sa-hud-phase-badge">
         {formatPhase(gameState.phase)}
       </div>
 
-      <div style={{ width: 1, height: 20, background: 'var(--sa-border)' }} />
+      <div className="sa-hud-divider" />
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
         {currentPlayer && (
           <>
-            <WorkerMeeple color={currentPlayer.color} size={16} />
+            <img
+              src={assetUrl(basePath, `players/figure-${getPlayerIndex(currentPlayer.color)}.png`)}
+              alt={currentPlayer.color}
+              width={18}
+              height={22}
+              style={{ objectFit: 'contain' }}
+              draggable={false}
+            />
             <span style={{
               fontSize: 13,
               fontWeight: 600,
@@ -70,7 +78,7 @@ export function GameHUD({ gameState, userId }: GameHUDProps) {
 
       {gameState.pendingDiceForItems && (
         <>
-          <div style={{ width: 1, height: 20, background: 'var(--sa-border)' }} />
+          <div className="sa-hud-divider" />
           <span className="sa-pulse" style={{ fontSize: 12, color: 'var(--sa-gold)' }}>
             Choose dice reward...
           </span>

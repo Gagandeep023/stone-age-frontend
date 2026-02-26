@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { io, type Socket } from 'socket.io-client';
-import type { GameState, GameRoom, FinalScore, GamePhase, LocationId, ResourceType, DiceForItemsChoice } from '../types/index.js';
+import type { GameState, GameRoom, FinalScore, GamePhase, LocationId, ResourceType, DiceForItemsChoice, ChatMessage } from '../types/index.js';
 
 interface UseStoneAgeSocketOptions {
   wsBase: string;
@@ -14,6 +14,8 @@ interface UseStoneAgeSocketOptions {
   onTurnChange?: (playerId: string) => void;
   onPlayerDisconnected?: (playerId: string) => void;
   onPlayerReconnected?: (playerId: string) => void;
+  onGameEnded?: (reason: string) => void;
+  onChat?: (message: ChatMessage) => void;
 }
 
 export function useStoneAgeSocket(options: UseStoneAgeSocketOptions) {
@@ -76,6 +78,14 @@ export function useStoneAgeSocket(options: UseStoneAgeSocketOptions) {
 
     socket.on('playerReconnected', (data: { playerId: string }) => {
       options.onPlayerReconnected?.(data.playerId);
+    });
+
+    socket.on('gameEnded', (data: { reason: string }) => {
+      options.onGameEnded?.(data.reason);
+    });
+
+    socket.on('chat', (data: ChatMessage) => {
+      options.onChat?.(data);
     });
 
     return () => {
@@ -142,6 +152,22 @@ export function useStoneAgeSocket(options: UseStoneAgeSocketOptions) {
     socketRef.current?.emit('chooseDiceReward', { choice });
   }, []);
 
+  const chooseFlexResources = useCallback((chosen: Partial<Record<ResourceType, number>>) => {
+    socketRef.current?.emit('chooseFlexResources', { chosen });
+  }, []);
+
+  const chooseResourceDiceType = useCallback((resource: ResourceType) => {
+    socketRef.current?.emit('chooseResourceDiceType', { resource });
+  }, []);
+
+  const sendChat = useCallback((message: string, emote?: string) => {
+    socketRef.current?.emit('sendChat', { message, emote });
+  }, []);
+
+  const endGame = useCallback(() => {
+    socketRef.current?.emit('endGame');
+  }, []);
+
   const reconnect = useCallback(() => {
     socketRef.current?.connect();
   }, []);
@@ -163,6 +189,10 @@ export function useStoneAgeSocket(options: UseStoneAgeSocketOptions) {
     feedWorkers,
     acceptStarvation,
     chooseDiceReward,
+    chooseFlexResources,
+    chooseResourceDiceType,
+    sendChat,
+    endGame,
     reconnect,
   };
 }
