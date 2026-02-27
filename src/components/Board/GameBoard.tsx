@@ -122,9 +122,6 @@ const LOCATION_RESOURCE: Partial<Record<LocationId, { resource: string; icon: st
   river: { resource: 'gold', icon: 'resources/gold.png' },
 };
 
-// Food production token denominations shown near hunting grounds
-const FOOD_TOKENS = [1, 2, 5, 10];
-
 // Map building tile ID (fixed-01..fixed-11, flex-01..flex-08, var-01..var-09) to hut image number (1-28)
 function getBuildingImageNum(tileId: string): number {
   const match = tileId.match(/^(fixed|flex|var)-(\d+)$/);
@@ -206,25 +203,6 @@ export function GameBoard({ gameState, availableLocations, onLocationClick, sele
             </feMerge>
           </filter>
         </defs>
-
-        {/* Food production tokens near hunting grounds */}
-        {(() => {
-          const hg = BOARD_LOCATIONS.find(l => l.id === 'huntingGrounds')!;
-          return (
-            <g style={{ pointerEvents: 'none' }}>
-              {FOOD_TOKENS.map((val, i) => {
-                const tx = hg.x + hg.width + 8;
-                const ty = hg.y + 10 + i * 28;
-                return (
-                  <g key={val}>
-                    <circle cx={tx + 11} cy={ty + 11} r={12} fill="#c8a55a" stroke="#8b6914" strokeWidth="1.5" />
-                    <circle cx={tx + 11} cy={ty + 11} r={9} fill="none" stroke="#a07818" strokeWidth="0.8" />
-                  </g>
-                );
-              })}
-            </g>
-          );
-        })()}
 
         {/* Interactive location overlays */}
         {BOARD_LOCATIONS.map(loc => {
