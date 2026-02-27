@@ -7,9 +7,6 @@ import { AssetContext } from '../../utils/assetPath.js';
 import { SkyAndLighting } from '../Scene/SkyAndLighting.js';
 import { BoardTerrain } from '../Scene/BoardTerrain.js';
 import { BoardLocations } from '../Scene/BoardLocations.js';
-import { RiverMesh } from '../Scene/RiverMesh.js';
-import { ForestMesh } from '../Scene/ForestMesh.js';
-import { CampfireMesh } from '../Scene/CampfireMesh.js';
 import { DiceScene } from '../Scene/DiceScene.js';
 import { ResourceParticles } from '../Scene/ResourceParticles.js';
 
@@ -44,9 +41,6 @@ function Scene({
       />
 
       <BoardTerrain />
-      <RiverMesh />
-      <ForestMesh />
-      <CampfireMesh />
 
       <BoardLocations
         gameState={gameState}

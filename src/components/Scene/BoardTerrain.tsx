@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import { useLoader } from '@react-three/fiber';
 import * as THREE from 'three';
 import { useAssetPath, assetUrl } from '../../utils/assetPath.js';
 
@@ -15,32 +14,9 @@ export function BoardTerrain() {
     return tex;
   }, [basePath]);
 
-  const dirtTexture = useMemo(() => {
-    const loader = new THREE.TextureLoader();
-    const tex = loader.load(assetUrl(basePath, 'textures/dirt-diffuse.jpg'));
-    tex.colorSpace = THREE.SRGBColorSpace;
-    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(4, 3);
-    return tex;
-  }, [basePath]);
-
-  const groundGeometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(28, 22, 64, 64);
-    const pos = geo.attributes.position;
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i);
-      const y = pos.getY(i);
-      // Subtle terrain undulation
-      pos.setZ(i, Math.sin(x * 0.3) * Math.cos(y * 0.3) * 0.15);
-    }
-    pos.needsUpdate = true;
-    geo.computeVertexNormals();
-    return geo;
-  }, []);
-
   return (
     <group>
-      {/* Main board surface with board image texture */}
+      {/* Main board surface with board image texture - flat, no undulation */}
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.5, 0]}
@@ -49,46 +25,22 @@ export function BoardTerrain() {
         <planeGeometry args={[24, 18]} />
         <meshStandardMaterial
           map={boardTexture}
-          roughness={0.8}
+          roughness={0.7}
           metalness={0.0}
         />
       </mesh>
 
-      {/* Extended ground around the board with dirt texture */}
+      {/* Thin dark ground plane extending beyond the board */}
       <mesh
         rotation={[-Math.PI / 2, 0, 0]}
         position={[0, -0.52, 0]}
         receiveShadow
-        geometry={groundGeometry}
       >
+        <planeGeometry args={[40, 30]} />
         <meshStandardMaterial
-          map={dirtTexture}
-          roughness={0.95}
-          metalness={0.0}
-          color="#5a4a30"
-        />
-      </mesh>
-
-      {/* Subtle elevation around board edges */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.51, 0]}>
-        <ringGeometry args={[12, 14.5, 64]} />
-        <meshStandardMaterial
-          map={dirtTexture}
+          color="#1a1207"
           roughness={1}
-          color="#3a2a18"
-          transparent
-          opacity={0.7}
-        />
-      </mesh>
-
-      {/* Warm ambient ground fog plane */}
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.53, 0]}>
-        <circleGeometry args={[14.5, 64]} />
-        <meshStandardMaterial
-          color="#2a1f0e"
-          roughness={1}
-          transparent
-          opacity={0.3}
+          metalness={0}
         />
       </mesh>
     </group>
