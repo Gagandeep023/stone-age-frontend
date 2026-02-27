@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, Suspense, lazy } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import type {
   StoneAgeGameProps, GameState, LocationId, GamePhase, ChatMessage, ResourceType,
 } from '../../types/index.js';
@@ -8,11 +8,9 @@ import { useStoneAgeSocket } from '../../hooks/useStoneAgeSocket.js';
 import { useGameState } from '../../hooks/useGameState.js';
 import { useAnimationQueue } from '../../hooks/useAnimationQueue.js';
 import { useSoundManager } from '../../hooks/useSoundManager.js';
-import { useCameraController } from '../../hooks/useCameraController.js';
 import { useTurnTimer } from '../../hooks/useTurnTimer.js';
 import { diffStates } from '../../animation/AnimationSystem.js';
 import { GameBoard } from '../Board/GameBoard.js';
-import { GameBoard3D } from '../Board/GameBoard3D.js';
 import { GameOverlay } from '../Overlays/GameOverlay.js';
 import { NotificationToast } from '../Overlays/NotificationToast.js';
 import { TurnTimerOverlay } from '../Overlays/TurnTimerOverlay.js';
@@ -38,7 +36,6 @@ export function StoneAgeGame({ gameId, wsBase, user, authToken, onLeave, assetBa
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [scorePopup, setScorePopup] = useState<{ amount: number; playerId: string } | null>(null);
   const [currentAchievement, setCurrentAchievement] = useState<Achievement | null>(null);
-  const [use3D, setUse3D] = useState(true);
   const [unlockedAchievements, setUnlockedAchievements] = useState<Set<string>>(new Set());
   const leavingRef = React.useRef(false);
   const prevStateRef = useRef<GameState | null>(null);
@@ -49,7 +46,6 @@ export function StoneAgeGame({ gameId, wsBase, user, authToken, onLeave, assetBa
 
   const animationQueue = useAnimationQueue();
   const sound = useSoundManager();
-  const camera = useCameraController();
   const timer = useTurnTimer({
     duration: 90,
     enabled: isMyTurn,
@@ -114,17 +110,12 @@ export function StoneAgeGame({ gameId, wsBase, user, authToken, onLeave, assetBa
         break;
       case 'phaseChange':
         sound.play('turnStart');
-        if (event.phase) {
-          const preset = camera.getPresetForPhase(event.phase);
-          camera.setPreset(preset);
-        }
         break;
       case 'gameOver':
         sound.play('victory');
-        camera.setPreset(camera.presets.victory);
         break;
     }
-  }, [sound, camera]);
+  }, [sound]);
 
   const socket = useStoneAgeSocket({
     wsBase,
@@ -247,13 +238,6 @@ export function StoneAgeGame({ gameId, wsBase, user, authToken, onLeave, assetBa
         <button
           className="sa-btn"
           style={{ fontSize: 11, padding: '4px 8px' }}
-          onClick={() => setUse3D(v => !v)}
-        >
-          {use3D ? '2D' : '3D'}
-        </button>
-        <button
-          className="sa-btn"
-          style={{ fontSize: 11, padding: '4px 8px' }}
           onClick={sound.toggleMute}
         >
           {sound.muted ? 'Unmute' : 'Mute'}
@@ -264,23 +248,12 @@ export function StoneAgeGame({ gameId, wsBase, user, authToken, onLeave, assetBa
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
         {/* Left: Board */}
         <div style={{ flex: '1 1 500px', minWidth: 300, position: 'relative' }}>
-          {use3D ? (
-            <GameBoard3D
-              gameState={gameState}
-              availableLocations={isMyTurn ? availableLocations : []}
-              onLocationClick={handleLocationClick}
-              selectedLocation={selectedLocation}
-              currentAnimation={animationQueue.currentAnimation}
-              cameraPreset={camera.targetPreset}
-            />
-          ) : (
-            <GameBoard
-              gameState={gameState}
-              availableLocations={isMyTurn ? availableLocations : []}
-              onLocationClick={handleLocationClick}
-              selectedLocation={selectedLocation}
-            />
-          )}
+          <GameBoard
+            gameState={gameState}
+            availableLocations={isMyTurn ? availableLocations : []}
+            onLocationClick={handleLocationClick}
+            selectedLocation={selectedLocation}
+          />
 
           {/* Overlay elements positioned over the board */}
           <GameOverlay>
