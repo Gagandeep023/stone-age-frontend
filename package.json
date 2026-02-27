@@ -1,6 +1,6 @@
 {
   "name": "@gagandeep023/stone-age-frontend",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "description": "Stone Age board game frontend - React components, animations, and Socket.IO hooks",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

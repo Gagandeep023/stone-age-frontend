@@ -422,7 +422,7 @@ export function GameBoard({ gameState, availableLocations, onLocationClick, sele
                     />
                     <circle cx={loc.x + 12} cy={loc.y + 12} r={9} fill="rgba(26,18,7,0.85)" stroke="#f0c040" strokeWidth="1.5" />
                     <text x={loc.x + 12} y={loc.y + 16} textAnchor="middle" fill="#f0c040" fontSize="9" fontWeight="700">
-                      {idx + 1}
+                      {4 - idx}
                     </text>
                   </>
                 );
