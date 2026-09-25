@@ -1,6 +1,14 @@
 {
   "name": "@gagandeep023/stone-age-frontend",
-  "version": "0.6.2",
+  "version": "0.6.3",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gagandeep023/stone-age-frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Gagandeep023/stone-age-frontend/issues"
+  },
+  "homepage": "https://github.com/Gagandeep023/stone-age-frontend#readme",
   "description": "Stone Age board game frontend - React components, animations, and Socket.IO hooks",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
