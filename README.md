@@ -54,7 +54,8 @@ The fastest way to get started. The lobby handles room creation and joining, and
 
 ```tsx
 import { useState } from 'react';
-import { StoneAgeLobby, StoneAgeGame } from '@gagandeep023/stone-age-frontend';
+import { StoneAgeLobby, StoneAgeGame }
+  from '@gagandeep023/stone-age-frontend';
 import '@gagandeep023/stone-age-frontend/frontend/styles.css';
 
 function App() {
@@ -251,8 +252,10 @@ const {
   onGameOver: (scores) => console.log('Game over:', scores),
   onPhaseChange: (phase, round) => console.log('Phase:', phase, round),
   onTurnChange: (playerId) => console.log('Turn:', playerId),
-  onPlayerDisconnected: (playerId) => console.log('Disconnected:', playerId),
-  onPlayerReconnected: (playerId) => console.log('Reconnected:', playerId),
+  onPlayerDisconnected: (playerId) =>
+    console.log('Disconnected:', playerId),
+  onPlayerReconnected: (playerId) =>
+    console.log('Reconnected:', playerId),
 });
 ```
 
@@ -357,7 +360,8 @@ import {
   useStoneAgeSocket,
   useGameState,
 } from '@gagandeep023/stone-age-frontend';
-import type { GameState, PlayerState } from '@gagandeep023/stone-age-frontend';
+import type { GameState, PlayerState }
+  from '@gagandeep023/stone-age-frontend';
 
 // Frontend components only
 import {
@@ -368,7 +372,8 @@ import {
 } from '@gagandeep023/stone-age-frontend/frontend';
 
 // Types only
-import type { GameState, PlayerState, LocationId } from '@gagandeep023/stone-age-frontend/types';
+import type { GameState, PlayerState, LocationId }
+  from '@gagandeep023/stone-age-frontend/types';
 
 // Styles
 import '@gagandeep023/stone-age-frontend/frontend/styles.css';
@@ -450,10 +455,12 @@ The frontend connects to a Stone Age backend server (see [@gagandeep023/stone-ag
 You can use the hooks independently to build a custom UI:
 
 ```tsx
-import { useStoneAgeSocket, useGameState } from '@gagandeep023/stone-age-frontend';
+import { useStoneAgeSocket, useGameState }
+  from '@gagandeep023/stone-age-frontend';
 
 function CustomGame({ gameId, user }) {
-  const { gameState, myPlayer, isMyTurn, availableLocations } = useGameState(user.id);
+  const { gameState, myPlayer, isMyTurn, availableLocations } =
+    useGameState(user.id);
 
   const socket = useStoneAgeSocket({
     wsBase: 'http://localhost:3001',
@@ -466,7 +473,11 @@ function CustomGame({ gameId, user }) {
     <div>
       <p>Round: {gameState?.roundNumber}</p>
       <p>My Score: {myPlayer?.score}</p>
-      {isMyTurn && <button onClick={() => socket.placeWorkers('forest', 2)}>Place in Forest</button>}
+      {isMyTurn && (
+        <button onClick={() => socket.placeWorkers('forest', 2)}>
+          Place in Forest
+        </button>
+      )}
     </div>
   );
 }
